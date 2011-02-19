@@ -26,11 +26,6 @@ public class SteamPunktClock extends AnalogClock{
     //RotateDrawable mHand;
     Drawable mHand;
     
-    /**
-     * Background image
-     */
-    Drawable mBgTile;
-    
     int mHandWidth;
     int mHandHeight;
     private float mClockBorderWidth = 25;
@@ -44,15 +39,8 @@ public class SteamPunktClock extends AnalogClock{
         
         mHandWidth = mHand.getIntrinsicWidth();
         mHandHeight = mHand.getIntrinsicWidth();
-        
-        mBgTile = res.getDrawable(R.drawable.repeating_woodbg1);
-        
+    
     }   
-
-    @Override
-    protected void drawBackground(Canvas canvas){
-        mBgTile.draw(canvas);
-    }
     
     /**
      * Draw a generic hand.
@@ -86,19 +74,13 @@ public class SteamPunktClock extends AnalogClock{
         //convert to ints now what we're done with the math.
         int handWidth = (int)fHandWidth;
         int handHeight = (int)fHandHeight;
-        
-        //keep the hand from being so thin, it's zero.
-        //if(handWidth < 4) handWidth = 16;
-        
+                
         int halfWidth = handWidth/8;
         int xLeft = (int)(centerX) - halfWidth;
         int yTop = (int)(centerY) - handHeight;
         int xRight = (int)(centerX) + halfWidth;
         int yBottom = (int)centerY;
         
-//        Log.i("SteamPunktClock", "Bounds[ " 
-//                + xLeft + "," + yTop + " and " 
-//                + xRight + "," + yBottom + "]");
         c.save();
         c.rotate(theta, centerX, centerY);
         mHand.setBounds(xLeft, yTop, xRight, yBottom);

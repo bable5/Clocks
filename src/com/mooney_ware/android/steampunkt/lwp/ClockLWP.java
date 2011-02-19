@@ -19,14 +19,16 @@ package com.mooney_ware.android.steampunkt.lwp;
 import java.util.Date;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
+import com.mooney_ware.android.steampunkt.R;
 import com.mooney_ware.android.steampunkt.clock.IClockInterface;
-import com.mooney_ware.android.steampunkt.clock.impls.AnalogClock;
 import com.mooney_ware.android.steampunkt.clock.impls.SteamPunktClock;
 
 /*
@@ -36,10 +38,14 @@ public class ClockLWP extends WallpaperService {
 
     private final Handler mHandler = new Handler();
     private final Context mContext = this;
+    private Drawable mBGImage;
     
     @Override
     public void onCreate() {
         super.onCreate();
+        Resources res = getResources();
+        mBGImage = res.getDrawable(R.drawable.repeating_woodbg1);
+       
     }
 
     @Override
@@ -72,6 +78,9 @@ public class ClockLWP extends WallpaperService {
         private float mCenterY;
     	private static final int BG_COLOR = 0xff000000;
         
+    	//Tick twice a second
+    	static final int TICK_FREQ = 500;
+    	
     	private final Runnable mDrawTime = new Runnable() {
 			
 			@Override
@@ -84,26 +93,28 @@ public class ClockLWP extends WallpaperService {
 		void drawFrame() {
             final SurfaceHolder holder = getSurfaceHolder();
 
-            Canvas c = null;
+            Canvas canvas = null;
             try {
-                c = holder.lockCanvas();
-                if (c != null) {
+                canvas = holder.lockCanvas();
+                if (canvas != null) {
+                    //translating the canvase doesn't seem to effect how the clock is drawn
+                    //canvas.save();
+                    //canvas.drawColor(BG_COLOR);
+                    mBGImage.draw(canvas);
+                    //canvas.translate(mCenterX, mCenterY);
                     final Date now = new Date(System.currentTimeMillis());
-                    c.save();
-                    c.drawColor(BG_COLOR);
-                    c.translate(mCenterX, mCenterY);
                     mClockFace.update(now);
-                    mClockFace.onDraw(c);
-                    c.restore();
+                    mClockFace.onDraw(canvas);
+                    //canvas.restore();
                 }
             } finally {
-                if (c != null) holder.unlockCanvasAndPost(c);
+                if (canvas != null) holder.unlockCanvasAndPost(canvas);
             }
 
             // Reschedule the next redraw
             mHandler.removeCallbacks(mDrawTime);
             if (mVisible) {
-                mHandler.postDelayed(mDrawTime, 1000 / 25);
+                mHandler.postDelayed(mDrawTime, TICK_FREQ);
             }
         }
 		
@@ -137,6 +148,11 @@ public class ClockLWP extends WallpaperService {
 	            // store the center of the surface, so we can draw the cube in the right spot
 	            mCenterX = width/2.0f;
 	            mCenterY = height/2.0f;
+	            
+	            //reset the size of the drawable
+	            Drawable bg = mBGImage;
+	            bg.setBounds(0, 0, width, height);
+	            
 	            drawFrame();
 	        }
 
@@ -156,6 +172,9 @@ public class ClockLWP extends WallpaperService {
 	        public void onOffsetsChanged(float xOffset, float yOffset,
 	                float xStep, float yStep, int xPixels, int yPixels) {
 	            mOffset = xOffset;
+	            
+	            Log.i("CLWP", "Offsets now: " + xOffset + "," + yOffset);
+	            
 	            drawFrame();
 	        }
     }

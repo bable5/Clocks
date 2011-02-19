@@ -70,9 +70,7 @@ public class CL_Clock implements IClockInterface {
      * specific background.
      * @param canvas
      */
-    protected void drawBackground(Canvas canvas){
-        canvas.drawColor(Color.GRAY);
-    }
+    protected void drawBackground(Canvas canvas){}
     
     @Override
     public void update(Date d) {
