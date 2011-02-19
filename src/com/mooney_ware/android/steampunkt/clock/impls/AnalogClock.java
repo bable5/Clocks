@@ -54,10 +54,10 @@ public class AnalogClock extends CL_Clock{
         min = d.getMinutes();
         sec = d.getSeconds();
         
-        //hour hand
-        drawMinuteHand(canvas, min, sec);
         //minute hand
         drawHourHand(canvas, hour, min);
+        //hour hand
+        drawMinuteHand(canvas, min, sec);
         //secondhand
         drawSecondHand(canvas, sec);
         
