@@ -40,6 +40,8 @@ public class ClockLWP extends WallpaperService {
     private final Context mContext = this;
     private Drawable mBGImage;
     
+    public static final String SHARED_PREFS_NAME="clocksettings";
+    
     @Override
     public void onCreate() {
         super.onCreate();

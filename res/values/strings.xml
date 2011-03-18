@@ -2,4 +2,17 @@
 <resources>
     <string name="hello">Hello World, ClockFace!</string>
     <string name="app_name">SteamPunktClock</string>
+    <string name="clock_settings">Clock Settings</string>
+    <string name="clock_settings_title">Clock Settings</string>
+    <string name="clock_settings_summary">Clock Faces</string>
+    
+    <string-array name="clock_face_names">
+        <item>"Brass"</item>
+        <item>"Binary LED"</item>
+    </string-array>
+
+    <string-array name="clock_face_prefix">
+        <item>"brass"</item>
+        <item>"binary"</item>
+    </string-array>
 </resources>

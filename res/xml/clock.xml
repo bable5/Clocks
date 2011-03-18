@@ -20,4 +20,5 @@
 <!-- The attributes in this XML file provide configuration information -->
 
 <wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
+android:settingsActivity="com.mooney_ware.android.steampunkt.lwp.ClockSettings"
 />
