@@ -19,6 +19,7 @@ package com.mooney_ware.android.steampunkt.lwp;
 import java.util.Date;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -29,6 +30,7 @@ import android.view.SurfaceHolder;
 
 import com.mooney_ware.android.steampunkt.R;
 import com.mooney_ware.android.steampunkt.clock.IClockInterface;
+import com.mooney_ware.android.steampunkt.clock.impls.AnalogClock;
 import com.mooney_ware.android.steampunkt.clock.impls.SteamPunktClock;
 
 /*
@@ -37,7 +39,6 @@ import com.mooney_ware.android.steampunkt.clock.impls.SteamPunktClock;
 public class ClockLWP extends WallpaperService {
 
     private final Handler mHandler = new Handler();
-    private final Context mContext = this;
     private Drawable mBGImage;
     
     public static final String SHARED_PREFS_NAME="clocksettings";
@@ -60,13 +61,36 @@ public class ClockLWP extends WallpaperService {
     	return new ClockEngine();
     }
 
-    class ClockEngine extends Engine{
+    class ClockEngine extends Engine implements SharedPreferences.OnSharedPreferenceChangeListener{
     	//IClockInterface mClockFace = new CL_Clock();
     	//IClockInterface mClockFace = new AnalogClock();
-        IClockInterface mClockFace = new SteamPunktClock(mContext);
+        IClockInterface mClockFace; 
+        
+        SharedPreferences mPrefs;
         
     	public ClockEngine(){
     	    super();
+    	    
+    	    mPrefs = ClockLWP.this.getSharedPreferences(SHARED_PREFS_NAME, 0);
+    	    Log.d("CLOCK ENGINE", "Registering shared pref listener");
+            mPrefs.registerOnSharedPreferenceChangeListener(this);
+            onSharedPreferenceChanged(mPrefs, null);
+    	}
+    	
+    	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+    	    String face = prefs.getString("clock_face", "brass");
+            // read the 3D model from the resource
+            setClockFace(face);
+        }
+    	
+    	private void setClockFace(String facename){
+    	    Log.d("CLOCK ENGINE", "Face changed to " + facename);
+    	    if("brass".equals(facename)){
+    	        mClockFace = new SteamPunktClock(ClockLWP.this); 
+    	    }else if("binary".equals(facename)){
+    	        mClockFace = new AnalogClock();
+    	    }else throw new RuntimeException("Unknown Clock Face " + facename);
+    	    
     	}
     	
     	//IClockInterface mClockFace = new SteamPunktClock(mContex);
