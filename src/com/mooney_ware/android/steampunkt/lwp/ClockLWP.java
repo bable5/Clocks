@@ -22,11 +22,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
 import android.util.Log;
 import android.view.SurfaceHolder;
+
 
 import com.mooney_ware.android.steampunkt.R;
 import com.mooney_ware.android.steampunkt.clock.IClockInterface;
@@ -46,9 +49,6 @@ public class ClockLWP extends WallpaperService {
     @Override
     public void onCreate() {
         super.onCreate();
-        Resources res = getResources();
-        mBGImage = res.getDrawable(R.drawable.repeating_woodbg1);
-       
     }
 
     @Override
@@ -79,16 +79,19 @@ public class ClockLWP extends WallpaperService {
     	
     	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
     	    String face = prefs.getString("clock_face", "brass");
-            // read the 3D model from the resource
             setClockFace(face);
         }
     	
     	private void setClockFace(String facename){
     	    Log.d("CLOCK ENGINE", "Face changed to " + facename);
     	    if("brass".equals(facename)){
-    	        mClockFace = new SteamPunktClock(ClockLWP.this); 
-    	    }else if("binary".equals(facename)){
+                Context context = ClockLWP.this;
+    	        mClockFace = new SteamPunktClock(context); 
+                Resources res = context.getResources();
+                mBGImage = res.getDrawable(R.drawable.repeating_woodbg1);
+            }else if("binary".equals(facename)){
     	        mClockFace = new AnalogClock();
+                mBGImage = new ColorDrawable(Color.BLACK);
     	    }else throw new RuntimeException("Unknown Clock Face " + facename);
     	    
     	}
