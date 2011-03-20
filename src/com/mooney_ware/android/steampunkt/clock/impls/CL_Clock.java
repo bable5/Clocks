@@ -12,6 +12,15 @@ import android.graphics.drawable.Drawable;
 
 import com.mooney_ware.android.steampunkt.clock.IClockInterface;
 
+/**
+ * A clock that simply draws its time as a string on the screen.
+ * 
+ * This class is suitable for extending for any other 
+ * clock face type drawables.
+ * 
+ * @author Sean Mooney
+ *
+ */
 public class CL_Clock extends Drawable implements IClockInterface {
 
     protected DateFormat mFormat = DateFormat.getDateTimeInstance();
@@ -23,12 +32,8 @@ public class CL_Clock extends Drawable implements IClockInterface {
     static final int MAX_NUM_HRS = 12;
     
     protected Date mDate;
-    
-//    CyclicCounter seconds = new CyclicCounter(MAX_NUM_SECS);
-//    CyclicCounter minutes = new CyclicCounter(MAX_NUM_MINS);
-//    CyclicCounter hours = new CyclicCounter(numTicks);
-
     private TickTockListener listener;
+    private ColorFilter mColorFilter;
     
     public CL_Clock(){
         init();
@@ -72,6 +77,10 @@ public class CL_Clock extends Drawable implements IClockInterface {
      */
     protected void drawBackground(Canvas canvas){}
     
+    /**
+     * Set the date and notify any connected listeners
+     * that a tick happened.
+     */
     @Override
     public void update(Date d) {
         mDate = d;
@@ -112,6 +121,6 @@ public class CL_Clock extends Drawable implements IClockInterface {
     @Override
     public void setColorFilter(ColorFilter cf) {
         mPaint.setColorFilter(cf);
+        mColorFilter = cf;
     }
-
 }
