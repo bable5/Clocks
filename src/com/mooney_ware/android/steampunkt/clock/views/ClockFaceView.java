@@ -37,7 +37,7 @@ public class  ClockFaceView extends View implements TickTockListener {
     
     @Override
     public void onDraw(Canvas canvas){
-        if(mClockface != null) mClockface.onDraw(canvas);
+        if(mClockface != null) mClockface.draw(canvas);
     }
 
     /* (non-Javadoc)

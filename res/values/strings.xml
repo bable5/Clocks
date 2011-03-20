@@ -8,11 +8,17 @@
     
     <string-array name="clock_face_names">
         <item>"Brass"</item>
+        <item>Simple</item>
         <item>"Binary LED"</item>
     </string-array>
 
     <string-array name="clock_face_prefix">
-        <item>"brass"</item>
-        <item>"binary"</item>
+        <item>@string/cfp_brass</item>
+        <item>@string/cfp_simple</item>
+        <item>@string/cfp_binary</item>
     </string-array>
+    
+    <string name="cfp_brass">brass</string>
+    <string name="cfp_simple">simple</string>
+    <string name="cfp_binary">binary</string>
 </resources>

@@ -30,10 +30,10 @@ import android.service.wallpaper.WallpaperService;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
-
 import com.mooney_ware.android.steampunkt.R;
 import com.mooney_ware.android.steampunkt.clock.IClockInterface;
 import com.mooney_ware.android.steampunkt.clock.impls.AnalogClock;
+import com.mooney_ware.android.steampunkt.clock.impls.BinaryClock;
 import com.mooney_ware.android.steampunkt.clock.impls.SteamPunktClock;
 
 /*
@@ -68,13 +68,24 @@ public class ClockLWP extends WallpaperService {
         
         SharedPreferences mPrefs;
         
+        final String BRASS_PREF;
+        final String SIMPLE_PREF;
+        final String BINARY_PREF;
+        
     	public ClockEngine(){
     	    super();
+    	    
+    	    Resources res = ClockLWP.this.getResources();
+    	    
+    	    BRASS_PREF = res.getString(R.string.cfp_brass);
+    	    SIMPLE_PREF = res.getString(R.string.cfp_simple);
+    	    BINARY_PREF = res.getString(R.string.cfp_binary);
     	    
     	    mPrefs = ClockLWP.this.getSharedPreferences(SHARED_PREFS_NAME, 0);
     	    Log.d("CLOCK ENGINE", "Registering shared pref listener");
             mPrefs.registerOnSharedPreferenceChangeListener(this);
             onSharedPreferenceChanged(mPrefs, null);
+    	
     	}
     	
     	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
@@ -84,28 +95,26 @@ public class ClockLWP extends WallpaperService {
     	
     	private void setClockFace(String facename){
     	    Log.d("CLOCK ENGINE", "Face changed to " + facename);
-    	    if("brass".equals(facename)){
+    	    if(BRASS_PREF.equals(facename)){
                 Context context = ClockLWP.this;
     	        mClockFace = new SteamPunktClock(context); 
                 Resources res = context.getResources();
                 mBGImage = res.getDrawable(R.drawable.repeating_woodbg1);
-            }else if("binary".equals(facename)){
+                mBGImage.setBounds(0, 0, mWidth, mHeight);
+    	    }else if(SIMPLE_PREF.equals(facename)){
     	        mClockFace = new AnalogClock();
-                mBGImage = new ColorDrawable(Color.BLACK);
+    	        mBGImage = new ColorDrawable(Color.BLACK);
+    	    }else if(BINARY_PREF.equals(facename)){
+    	        mClockFace = new BinaryClock();
+                mBGImage = new ColorDrawable(Color.WHITE);
     	    }else throw new RuntimeException("Unknown Clock Face " + facename);
     	    
     	}
     	
-    	//IClockInterface mClockFace = new SteamPunktClock(mContex);
-        
-    	//private final Paint mPaint = new Paint();
-        private float mOffset;
-//        private float mTouchX = -1;
-//        private float mTouchY = -1;
-//        private long mStartTime;
-        private float mCenterX;
-        private float mCenterY;
-    	private static final int BG_COLOR = 0xff000000;
+    	private float mXOffset;
+        private float mYOffset;
+        private int mWidth;
+        private int mHeight;
         
     	//Tick twice a second
     	static final int TICK_FREQ = 500;
@@ -127,19 +136,17 @@ public class ClockLWP extends WallpaperService {
                 canvas = holder.lockCanvas();
                 if (canvas != null) {
                     //translating the canvase doesn't seem to effect how the clock is drawn
-                    //canvas.save();
-                    //canvas.drawColor(BG_COLOR);
+                    canvas.save();
+                    canvas.translate(mXOffset, mYOffset);
                     mBGImage.draw(canvas);
-                    //canvas.translate(mCenterX, mCenterY);
                     final Date now = new Date(System.currentTimeMillis());
                     mClockFace.update(now);
-                    mClockFace.onDraw(canvas);
-                    //canvas.restore();
+                    mClockFace.draw(canvas);
+                    canvas.restore();
                 }
             } finally {
                 if (canvas != null) holder.unlockCanvasAndPost(canvas);
             }
-
             // Reschedule the next redraw
             mHandler.removeCallbacks(mDrawTime);
             if (mVisible) {
@@ -175,8 +182,8 @@ public class ClockLWP extends WallpaperService {
 	        public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 	            super.onSurfaceChanged(holder, format, width, height);
 	            // store the center of the surface, so we can draw the cube in the right spot
-	            mCenterX = width/2.0f;
-	            mCenterY = height/2.0f;
+	            mWidth = width;
+	            mHeight = height;
 	            
 	            //reset the size of the drawable
 	            Drawable bg = mBGImage;
@@ -200,8 +207,8 @@ public class ClockLWP extends WallpaperService {
 	        @Override
 	        public void onOffsetsChanged(float xOffset, float yOffset,
 	                float xStep, float yStep, int xPixels, int yPixels) {
-	            mOffset = xOffset;
-	            
+	            mXOffset = xOffset;
+	            mYOffset = yOffset; 
 	            Log.i("CLWP", "Offsets now: " + xOffset + "," + yOffset);
 	            
 	            drawFrame();

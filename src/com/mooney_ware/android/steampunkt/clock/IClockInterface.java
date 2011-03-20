@@ -9,7 +9,7 @@ import android.view.View;
 public interface IClockInterface {
 
     public void update(Date d);
-    public void onDraw(Canvas c);
+    public void draw(Canvas c);
 	public void registerTickListener(TickTockListener listener);
     
     /**

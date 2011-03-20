@@ -3,21 +3,20 @@ package com.mooney_ware.android.steampunkt.clock.impls;
 import java.text.DateFormat;
 import java.util.Date;
 
-import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.Typeface;
-import android.util.AttributeSet;
-import android.view.View;
+import android.graphics.drawable.Drawable;
 
 import com.mooney_ware.android.steampunkt.clock.IClockInterface;
-import com.mooney_ware.android.steampunkt.clock.mechanics.CyclicCounter;
 
-public class CL_Clock implements IClockInterface {
+public class CL_Clock extends Drawable implements IClockInterface {
 
-    DateFormat mFormat = DateFormat.getDateTimeInstance();
-    Paint mPaint = new Paint();
+    protected DateFormat mFormat = DateFormat.getDateTimeInstance();
+    protected Paint mPaint = new Paint();
+    protected int mOpacity = PixelFormat.TRANSLUCENT;
     
     static final int MAX_NUM_SECS = 60;
     static final int MAX_NUM_MINS = 60;
@@ -49,7 +48,9 @@ public class CL_Clock implements IClockInterface {
         paint.setTypeface(Typeface.SERIF);
     }
 
-    public void onDraw(Canvas canvas){
+    
+    public void draw(Canvas canvas){
+        drawBackground(canvas);
         drawTime(canvas);
     }
 
@@ -61,7 +62,6 @@ public class CL_Clock implements IClockInterface {
         float textLen = paint.measureText(text);
         float offset = textLen / 2.0f;
 
-        drawBackground(canvas);
         canvas.drawText(text, -offset, 0, paint);
     }
 
@@ -84,6 +84,34 @@ public class CL_Clock implements IClockInterface {
     @Override
     public void registerTickListener(TickTockListener listener) {
         this.listener = listener;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see android.graphics.drawable.Drawable#getOpacity()
+     */
+    @Override
+    public int getOpacity() {
+        return mOpacity;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see android.graphics.drawable.Drawable#setAlpha(int)
+     */
+    @Override
+    public void setAlpha(int alpha) {
+       this.mOpacity = alpha; 
+       mPaint.setAlpha(alpha);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see android.graphics.drawable.Drawable#setColorFilter(android.graphics.ColorFilter)
+     */
+    @Override
+    public void setColorFilter(ColorFilter cf) {
+        mPaint.setColorFilter(cf);
     }
 
 }
