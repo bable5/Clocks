@@ -209,8 +209,6 @@ public class ClockLWP extends WallpaperService {
 	                float xStep, float yStep, int xPixels, int yPixels) {
 	            mXOffset = xOffset;
 	            mYOffset = yOffset; 
-	            Log.i("CLWP", "Offsets now: " + xOffset + "," + yOffset);
-	            
 	            drawFrame();
 	        }
     }
