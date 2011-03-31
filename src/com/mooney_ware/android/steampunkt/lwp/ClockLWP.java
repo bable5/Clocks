@@ -150,7 +150,8 @@ public class ClockLWP extends WallpaperService {
             // Reschedule the next redraw
             mHandler.removeCallbacks(mDrawTime);
             if (mVisible) {
-                mHandler.postDelayed(mDrawTime, TICK_FREQ);
+                long postDelay = TICK_FREQ - (System.currentTimeMillis() % TICK_FREQ);
+                mHandler.postDelayed(mDrawTime, postDelay);
             }
         }
 		
